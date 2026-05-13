@@ -22,10 +22,10 @@ def load_image(name, size, color):
         surf.fill(color)
         return surf
 
-player_img = load_image("player.png", (60, 50), (0,255,0))
-enemy_img = load_image("enemy.png", (50, 40), (255,0,0))
-bullet_img = load_image("bullet.png", (6, 15), (255,255,255))
-bg_img = load_image("background.png", (WIDTH, HEIGHT), (0,0,20))
+player_img = load_image("player.jepg", (60, 50), (0,255,0))
+enemy_img = load_image("enemy.jepg", (50, 40), (255,0,0))
+bullet_img = load_image("bullet.jepg", (6, 15), (255,255,255))
+bg_img = load_image("background.jepg", (WIDTH, HEIGHT), (0,0,20))
 
 # Sounds (optional)
 def load_sound(name):
@@ -34,8 +34,8 @@ def load_sound(name):
     except:
         return None
 
-shoot_sound = load_sound("shoot.wav")
-explosion_sound = load_sound("explosion.wav")
+shoot_sound = load_sound("firepeg.mpeg")
+explosion_sound = load_sound("explosion.mpeg")
 
 font_big = pygame.font.SysFont(None, 64)
 font_small = pygame.font.SysFont(None, 32)
