@@ -8,7 +8,7 @@ pygame.mixer.init()
 
 WIDTH, HEIGHT = 800, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Galaxy Shooter Pro")
+pygame.display.set_caption(" Shooter")
 
 clock = pygame.time.Clock()
 FPS = 60
