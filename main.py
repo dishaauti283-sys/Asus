@@ -165,8 +165,7 @@ def game_loop():
         hits = pygame.sprite.groupcollide(enemies, bullets, True, True)
         for hit in hits:
             score += 10
-            if explosion_sound:
-                explosion_sound.play()
+            # Removed explosion sound as requested
             e = Enemy()
             all_sprites.add(e)
             enemies.add(e)
