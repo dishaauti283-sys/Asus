@@ -16,25 +16,25 @@ FPS = 60
 # Load assets (fallback if missing)
 def load_image(name, size, color):
     try:
-        return pygame.transform.scale(pygame.image.load(os.path.join("assets", name)), size)
+        return pygame.transform.scale(pygame.image.load(os.path.join(os.path.dirname(os.path.abspath(__file__)), name)), size)
     except:
         surf = pygame.Surface(size)
         surf.fill(color)
         return surf
 
-player_img = load_image("player.jepg", (60, 50), (0,255,0))
-enemy_img = load_image("enemy.jepg", (50, 40), (255,0,0))
-bullet_img = load_image("bullet.jepg", (6, 15), (255,255,255))
-bg_img = load_image("background.jepg", (WIDTH, HEIGHT), (0,0,20))
+player_img = load_image("player.jpeg", (60, 50), (0,255,0))
+enemy_img = load_image("enemy.jpeg", (50, 40), (255,0,0))
+bullet_img = load_image("bullet .jpeg", (6, 15), (255,255,255))
+bg_img = load_image("background.jpeg", (WIDTH, HEIGHT), (0,0,20))
 
 # Sounds (optional)
 def load_sound(name):
     try:
-        return pygame.mixer.Sound(os.path.join("assets", name))
+        return pygame.mixer.Sound(os.path.join(os.path.dirname(os.path.abspath(__file__)), name))
     except:
         return None
 
-shoot_sound = load_sound("firepeg.mpeg")
+shoot_sound = load_sound("firempeg.mpeg")
 explosion_sound = load_sound("explosion.mpeg")
 
 font_big = pygame.font.SysFont(None, 64)
@@ -46,7 +46,7 @@ class Player(pygame.sprite.Sprite):
         self.image = player_img
         self.rect = self.image.get_rect(center=(WIDTH//2, HEIGHT-60))
         self.speed = 6
-        self.lives = 3
+        self.lives = 5
 
     def update(self):
         keys = pygame.key.get_pressed()
@@ -101,7 +101,7 @@ def draw_text(text, font, color, y):
 def show_menu():
     while True:
         screen.blit(bg_img, (0,0))
-        draw_text("GALAXY SHOOTER", font_big, (255,255,255), 200)
+        draw_text("SHOOTER", font_big, (255,255,255), 200)
         draw_text("Press ENTER to Start", font_small, (200,200,200), 300)
 
         pygame.display.flip()
