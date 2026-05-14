@@ -27,7 +27,7 @@ enemy_img = load_image("enemy.jpeg", (50, 40), (255,0,0))
 bullet_img = load_image("bullet .jpeg", (6, 15), (255,255,255))
 bg_img = load_image("background.jpeg", (WIDTH, HEIGHT), (0,0,20))
 
-# Sounds (optional)
+# Sounds
 def load_sound(name):
     try:
         return pygame.mixer.Sound(os.path.join(os.path.dirname(os.path.abspath(__file__)), name))
@@ -36,6 +36,13 @@ def load_sound(name):
 
 shoot_sound = load_sound("firempeg.mpeg")
 explosion_sound = load_sound("explosion.mpeg")
+
+# Background music setup
+try:
+    pygame.mixer.music.load(os.path.join(os.path.dirname(os.path.abspath(__file__)), "background_music.mp3"))
+    pygame.mixer.music.set_volume(0.5)
+except:
+    pass
 
 font_big = pygame.font.SysFont(None, 64)
 font_small = pygame.font.SysFont(None, 32)
@@ -149,6 +156,12 @@ def game_loop():
 
     score = 0
 
+    try:
+        if not pygame.mixer.music.get_busy():
+            pygame.mixer.music.play(-1)
+    except:
+        pass
+
     running = True
     while running:
         clock.tick(FPS)
@@ -165,7 +178,8 @@ def game_loop():
         hits = pygame.sprite.groupcollide(enemies, bullets, True, True)
         for hit in hits:
             score += 10
-            # Removed explosion sound as requested
+            if explosion_sound:
+                explosion_sound.play()
             e = Enemy()
             all_sprites.add(e)
             enemies.add(e)
@@ -173,6 +187,8 @@ def game_loop():
         player_hits = pygame.sprite.spritecollide(player, enemies, True)
         for hit in player_hits:
             player.lives -= 1
+            if explosion_sound:
+                explosion_sound.play()
             e = Enemy()
             all_sprites.add(e)
             enemies.add(e)
