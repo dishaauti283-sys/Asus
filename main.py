@@ -1,205 +1,166 @@
-
 import pygame
 import random
-import os
 
 pygame.init()
 pygame.mixer.init()
 
-WIDTH, HEIGHT = 800, 600
+# SCREEN
+WIDTH = 800
+HEIGHT = 600
+
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Space Shooter")
 
 clock = pygame.time.Clock()
-FPS = 60
 
-# Load assets (fallback if missing)
-def load_image(name, size, color):
-    try:
-        return pygame.transform.scale(pygame.image.load(os.path.join(os.path.dirname(os.path.abspath(__file__)), name)), size)
-    except:
-        surf = pygame.Surface(size)
-        surf.fill(color)
-        return surf
+# IMAGES
+background = pygame.image.load("background.jpeg")
+background = pygame.transform.scale(background, (WIDTH, HEIGHT))
 
-player_img = load_image("player.jpeg", (60, 50), (0,255,0))
-enemy_img = load_image("enemy.jpeg", (50, 40), (255,0,0))
-bullet_img = load_image("bullet .jpeg", (6, 15), (255,255,255))
-bg_img = load_image("background.jpeg", (WIDTH, HEIGHT), (0,0,20))
+player_img = pygame.image.load("bullet.jpeg")
+player_img = pygame.transform.scale(player_img, (80, 80))
 
-# Sounds (optional)
-def load_sound(name):
-    try:
-        return pygame.mixer.Sound(os.path.join(os.path.dirname(os.path.abspath(__file__)), name))
-    except:
-        return None
+enemy_img = pygame.image.load("enemy.jpeg")
+enemy_img = pygame.transform.scale(enemy_img, (80, 80))
 
-shoot_sound = load_sound("firempeg.mpeg")
-explosion_sound = load_sound("explosion.mpeg")
+bullet_img = pygame.Surface((8, 20))
+bullet_img.fill((255, 255, 0))
 
-font_big = pygame.font.SysFont(None, 64)
-font_small = pygame.font.SysFont(None, 32)
+# SOUNDS
+fire_sound = pygame.mixer.Sound("firempeg.mpeg")
+explosion_sound = pygame.mixer.Sound("explosion.mpeg")
 
-class Player(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__()
-        self.image = player_img
-        self.rect = self.image.get_rect(center=(WIDTH//2, HEIGHT-60))
-        self.speed = 6
-        self.lives = 5
+# PLAYER
+player_x = WIDTH // 2
+player_y = HEIGHT - 120
+player_speed = 7
 
-    def update(self):
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT] and self.rect.left > 0:
-            self.rect.x -= self.speed
-        if keys[pygame.K_RIGHT] and self.rect.right < WIDTH:
-            self.rect.x += self.speed
+# BULLET
+bullet_x = 0
+bullet_y = player_y
+bullet_speed = 10
+bullet_state = "ready"
 
-    def shoot(self):
-        bullet = Bullet(self.rect.centerx, self.rect.top)
-        all_sprites.add(bullet)
-        bullets.add(bullet)
-        if shoot_sound:
-            shoot_sound.play()
+# ENEMY
+enemy_x = random.randint(0, WIDTH - 80)
+enemy_y = 50
+enemy_speed = 4
 
-class Enemy(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__()
-        self.image = enemy_img
-        self.rect = self.image.get_rect()
-        self.rect.x = random.randint(0, WIDTH-50)
-        self.rect.y = random.randint(-100, -40)
-        self.speedy = random.randint(2,6)
+# SCORE
+score = 0
+font = pygame.font.SysFont(None, 40)
 
-    def update(self):
-        self.rect.y += self.speedy
-        if self.rect.top > HEIGHT:
-            self.respawn()
+# PLAYER FUNCTION
+def player(x, y):
+    screen.blit(player_img, (x, y))
 
-    def respawn(self):
-        self.rect.x = random.randint(0, WIDTH-50)
-        self.rect.y = random.randint(-100, -40)
-        self.speedy = random.randint(2,6)
+# ENEMY FUNCTION
+def enemy(x, y):
+    screen.blit(enemy_img, (x, y))
 
-class Bullet(pygame.sprite.Sprite):
-    def __init__(self, x, y):
-        super().__init__()
-        self.image = bullet_img
-        self.rect = self.image.get_rect(center=(x,y))
-        self.speedy = -10
+# FIRE BULLET
+def fire_bullet(x, y):
+    global bullet_state
 
-    def update(self):
-        self.rect.y += self.speedy
-        if self.rect.bottom < 0:
-            self.kill()
+    bullet_state = "fire"
 
-def draw_text(text, font, color, y):
-    surface = font.render(text, True, color)
-    rect = surface.get_rect(center=(WIDTH//2, y))
-    screen.blit(surface, rect)
+    fire_sound.play()
 
-def show_menu():
-    while True:
-        screen.blit(bg_img, (0,0))
-        draw_text("Space Shooter", font_big, (255,255,255), 200)
-        draw_text("Press ENTER to Start", font_small, (200,200,200), 300)
+    screen.blit(bullet_img, (x + 35, y))
 
-        pygame.display.flip()
+# COLLISION
+def collision(enemy_x, enemy_y, bullet_x, bullet_y):
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                return False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:
-                    return True
+    distance = ((enemy_x - bullet_x) ** 2 + (enemy_y - bullet_y) ** 2) ** 0.5
 
-def show_game_over(score):
-    while True:
-        screen.blit(bg_img, (0,0))
-        draw_text("GAME OVER", font_big, (255,0,0), 200)
-        draw_text(f"Score: {score}", font_small, (255,255,255), 300)
-        draw_text("Press R to Restart or Q to Quit", font_small, (200,200,200), 350)
+    if distance < 50:
+        return True
 
-        pygame.display.flip()
+    return False
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                return False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_r:
-                    return True
-                if event.key == pygame.K_q:
-                    return False
+# GAME LOOP
+running = True
 
-def game_loop():
-    global all_sprites, enemies, bullets
+while running:
 
-    all_sprites = pygame.sprite.Group()
-    enemies = pygame.sprite.Group()
-    bullets = pygame.sprite.Group()
+    clock.tick(60)
 
-    player = Player()
-    all_sprites.add(player)
+    # BACKGROUND
+    screen.blit(background, (0, 0))
 
-    for _ in range(8):
-        e = Enemy()
-        all_sprites.add(e)
-        enemies.add(e)
+    # EVENTS
+    for event in pygame.event.get():
 
-    score = 0
+        if event.type == pygame.QUIT:
+            running = False
 
-    try:
-        if not pygame.mixer.music.get_busy():
-            pygame.mixer.music.play(-1)
-    except:
-        pass
+    # KEYS
+    keys = pygame.key.get_pressed()
 
-    running = True
-    while running:
-        clock.tick(FPS)
+    if keys[pygame.K_LEFT]:
+        player_x -= player_speed
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                return False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    player.shoot()
+    if keys[pygame.K_RIGHT]:
+        player_x += player_speed
 
-        all_sprites.update()
+    # LIMITS
+    if player_x < 0:
+        player_x = 0
 
-        hits = pygame.sprite.groupcollide(enemies, bullets, True, True)
-        for hit in hits:
-            score += 10
-            #Request to remove explosion sound 
-            e = Enemy()
-            all_sprites.add(e)
-            enemies.add(e)
+    if player_x > WIDTH - 80:
+        player_x = WIDTH - 80
 
-        player_hits = pygame.sprite.spritecollide(player, enemies, True)
-        for hit in player_hits:
-            player.lives -= 1
-            if explosion_sound:
-                explosion_sound.play()
-            e = Enemy()
-            all_sprites.add(e)
-            enemies.add(e)
-            if player.lives <= 0:
-                return score
+    # SHOOT
+    if keys[pygame.K_SPACE]:
 
-        screen.blit(bg_img, (0,0))
-        all_sprites.draw(screen)
+        if bullet_state == "ready":
 
-        draw_text(f"Score: {score}", font_small, (255,255,255), 20)
-        draw_text(f"Lives: {player.lives}", font_small, (255,255,255), 50)
+            bullet_x = player_x
+            bullet_y = player_y
 
-        pygame.display.flip()
+            fire_bullet(bullet_x, bullet_y)
 
-while True:
-    if not show_menu():
-        break
-    score = game_loop()
-    if not show_game_over(score):
-        break
+    # BULLET MOVEMENT
+    if bullet_state == "fire":
+
+        screen.blit(bullet_img, (bullet_x + 35, bullet_y))
+
+        bullet_y -= bullet_speed
+
+        if bullet_y < 0:
+            bullet_state = "ready"
+
+    # ENEMY MOVEMENT
+    enemy_y += enemy_speed
+
+    if enemy_y > HEIGHT:
+
+        enemy_x = random.randint(0, WIDTH - 80)
+        enemy_y = 50
+
+    # COLLISION CHECK
+    hit = collision(enemy_x, enemy_y, bullet_x, bullet_y)
+
+    if hit:
+
+        explosion_sound.play()
+
+        score += 1
+
+        bullet_state = "ready"
+        bullet_y = player_y
+
+        enemy_x = random.randint(0, WIDTH - 80)
+        enemy_y = 50
+
+    # DRAW
+    player(player_x, player_y)
+    enemy(enemy_x, enemy_y)
+
+    # SCORE
+    score_text = font.render("Score : " + str(score), True, (255, 255, 255))
+    screen.blit(score_text, (10, 10))
+
+    pygame.display.update()
 
 pygame.quit()
