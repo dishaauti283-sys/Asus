@@ -8,7 +8,7 @@ pygame.mixer.init()
 
 WIDTH, HEIGHT = 800, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption(" Shooter")
+pygame.display.set_caption(" Space Shooter")
 
 clock = pygame.time.Clock()
 FPS = 60
@@ -27,7 +27,7 @@ enemy_img = load_image("enemy.jpeg", (50, 40), (255,0,0))
 bullet_img = load_image("bullet .jpeg", (6, 15), (255,255,255))
 bg_img = load_image("background.jpeg", (WIDTH, HEIGHT), (0,0,20))
 
-# Sounds
+# Sounds (optional)
 def load_sound(name):
     try:
         return pygame.mixer.Sound(os.path.join(os.path.dirname(os.path.abspath(__file__)), name))
@@ -108,7 +108,7 @@ def draw_text(text, font, color, y):
 def show_menu():
     while True:
         screen.blit(bg_img, (0,0))
-        draw_text("SHOOTER", font_big, (255,255,255), 200)
+        draw_text("space SHOOTER", font_big, (255,255,255), 200)
         draw_text("Press ENTER to Start", font_small, (200,200,200), 300)
 
         pygame.display.flip()
@@ -178,8 +178,7 @@ def game_loop():
         hits = pygame.sprite.groupcollide(enemies, bullets, True, True)
         for hit in hits:
             score += 10
-            if explosion_sound:
-                explosion_sound.play()
+            # Removed explosion sound as requested
             e = Enemy()
             all_sprites.add(e)
             enemies.add(e)
