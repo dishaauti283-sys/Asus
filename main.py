@@ -8,7 +8,7 @@ pygame.mixer.init()
 
 WIDTH, HEIGHT = 800, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("space Shooter")
+pygame.display.set_caption("Space Shooter")
 
 clock = pygame.time.Clock()
 FPS = 60
@@ -101,7 +101,7 @@ def draw_text(text, font, color, y):
 def show_menu():
     while True:
         screen.blit(bg_img, (0,0))
-        draw_text("space SHOOTER", font_big, (255,255,255), 200)
+        draw_text("Space SHOOTER", font_big, (255,255,255), 200)
         draw_text("Press ENTER to Start", font_small, (200,200,200), 300)
 
         pygame.display.flip()
@@ -171,6 +171,7 @@ def game_loop():
         hits = pygame.sprite.groupcollide(enemies, bullets, True, True)
         for hit in hits:
             score += 10
+            #Request to remove explosion sound 
             e = Enemy()
             all_sprites.add(e)
             enemies.add(e)
