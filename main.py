@@ -44,7 +44,8 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = player_img
-        self.speed = 4
+        self.rect = self.image.get_rect(center=(WIDTH//2, HEIGHT-60))
+        self.speed = 6
         self.lives = 5
 
     def update(self):
