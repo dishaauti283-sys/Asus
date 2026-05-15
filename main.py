@@ -44,8 +44,7 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = player_img
-        self.rect = self.image.get_rect(center=(WIDTH//2, HEIGHT-60))
-        self.speed = 6
+        self.speed = 4
         self.lives = 5
 
     def update(self):
@@ -101,7 +100,7 @@ def draw_text(text, font, color, y):
 def show_menu():
     while True:
         screen.blit(bg_img, (0,0))
-        draw_text("Space SHOOTER", font_big, (255,255,255), 200)
+        draw_text("Space Shooter", font_big, (255,255,255), 200)
         draw_text("Press ENTER to Start", font_small, (200,200,200), 300)
 
         pygame.display.flip()
