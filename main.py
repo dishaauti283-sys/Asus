@@ -142,12 +142,13 @@ while running:
         running = False
     # COLLISION CHECK
     hit = collision(enemy_x, enemy_y, bullet_x, bullet_y)
-    if hit:if enemy_y > HEIGHT:
-    restart = game_over()
-    if restart:
-        score = 0
-        enemy_x = random.randint(0, WIDTH - 80)
-        enemy_y = 50
+    if hit:
+        if enemy_y > HEIGHT:
+           restart = game_over()
+        if restart:
+          score = 0
+          enemy_x = random.randint(0, WIDTH - 80)
+          enemy_y = 50
         player_x = WIDTH // 2
     else:
         running = False
